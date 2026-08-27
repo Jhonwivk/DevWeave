@@ -4,10 +4,13 @@
 
 **Blocked by:** 10: Human Project Membership 与 Team View
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Human 可以提交 Private Agent Manifest、配置摘要、权限需求和内容哈希供 Project Sponsor 审核。
-- [ ] 审核通过后创建项目内配置副本及 Agent Membership，不读取或复制未获批准的私人历史记忆。
-- [ ] 原 Private Agent 后续发生变化不会影响已固定副本或进行中的 Execution。
-- [ ] Team View 明确显示 Private Agent 来源、Cultivator、Sponsor、快照版本和信任状态。
+- [x] Human 可以提交 Private Agent Manifest、配置摘要、权限需求和内容哈希供 Project Sponsor 审核。
+- [x] 审核通过后创建项目内配置副本及 Agent Membership，不读取或复制未获批准的私人历史记忆。
+- [x] 原 Private Agent 后续发生变化不会影响已固定副本或进行中的 Execution。
+- [x] Team View 明确显示 Private Agent 来源、Cultivator、Sponsor、快照版本和信任状态。
 
+## Answer
+
+Private Agent 以 Manifest/摘要/权限需求导入并生成项目内副本和 Membership，不读取私人记忆。

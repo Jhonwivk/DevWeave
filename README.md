@@ -20,7 +20,9 @@ pnpm db:init
 pnpm dev
 ```
 
-然后打开 http://127.0.0.1:5173 ，健康页面应分别显示 Server、Worker 和 PostgreSQL 的可用状态。
+然后打开 http://127.0.0.1:5173 。首页可创建 Project 并打开 Dashboard、Spec/Work、Team、Execution、Artifact、Inbox 与 Merge Queue；`#` 健康页仍分别显示 Server、Worker 和 PostgreSQL。
+
+OAuth 验收使用本地 fixture 仓库与 Mock Executor，不连接生产 Provider。Pi 是默认真实 Kernel（需本机已安装 `pi` 并配置其凭证）；测试默认走 Mock Executor。
 
 macOS 安装 PostgreSQL：
 

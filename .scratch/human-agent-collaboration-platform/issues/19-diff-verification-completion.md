@@ -4,10 +4,13 @@
 
 **Blocked by:** 18: 隔离 Execution Workspace
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Execution View 展示平台读取的 Git 状态和 diff，并与 Agent 自述明确区分。
-- [ ] 平台运行 Project 的 Verification Profile，保存实际命令、环境、工具版本、结果和耗时。
-- [ ] 只有通过 Verification 且满足引用 Acceptance Criteria 的候选才能推进 Work Item 和 Coverage。
-- [ ] Git fixture 集成测试覆盖成功、无变更、脏 Workspace 和 Verification 失败路径。
+- [x] Execution View 展示平台读取的 Git 状态和 diff，并与 Agent 自述明确区分。
+- [x] 平台运行 Project 的 Verification Profile，保存实际命令、环境、工具版本、结果和耗时。
+- [x] 只有通过 Verification 且满足引用 Acceptance Criteria 的候选才能推进 Work Item 和 Coverage。
+- [x] Git fixture 集成测试覆盖成功、无变更、脏 Workspace 和 Verification 失败路径。
 
+## Answer
+
+平台独立运行 Verification Profile 并保存证据；未通过验证的候选不能推进 Coverage 为 verified。

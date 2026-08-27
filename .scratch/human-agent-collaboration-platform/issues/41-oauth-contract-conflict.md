@@ -4,10 +4,13 @@
 
 **Blocked by:** 31: Contract 依赖与 stale 传播; 35: Contract Ownership 与冲突分类; 38: 有限修复、Human 升级与受保护合并; 39: 正常 OAuth 协作场景
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] 场景可以确定性制造 Contract 版本变化，并将 Frontend/QA Consumer 标记 stale。
-- [ ] Consumer 收到新 Contract Context，完成显式采用和适配后才能重新进入 merge queue。
-- [ ] 场景至少证明一种 Contract Conflict，并通过 clean merge 后测试失败证明一种 Semantic Conflict。
-- [ ] 修复后的候选重新通过 Verification 才能合并，冲突、决策和 Human Intervention 全部可追溯。
+- [x] 场景可以确定性制造 Contract 版本变化，并将 Frontend/QA Consumer 标记 stale。
+- [x] Consumer 收到新 Contract Context，完成显式采用和适配后才能重新进入 merge queue。
+- [x] 场景至少证明一种 Contract Conflict，并通过 clean merge 后测试失败证明一种 Semantic Conflict。
+- [x] 修复后的候选重新通过 Verification 才能合并，冲突、决策和 Human Intervention 全部可追溯。
 
+## Answer
+
+Contract 版本变化使 Consumer stale；场景覆盖 Contract Conflict 与 clean merge 后的 Semantic Conflict。

@@ -50,9 +50,21 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.0
         version: 1.19.17(hono@4.13.5)
+      '@human-agent/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@human-agent/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@human-agent/mock-adapter':
+        specifier: workspace:*
+        version: link:../../packages/mock-adapter
       '@human-agent/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
+      '@human-agent/pi-adapter':
+        specifier: workspace:*
+        version: link:../../packages/pi-adapter
       '@human-agent/shared-contracts':
         specifier: workspace:*
         version: link:../../packages/shared-contracts
@@ -90,7 +102,10 @@ importers:
         version: 6.10.0(@testing-library/dom@10.4.1)
       '@testing-library/react':
         specifier: ^16.3.0
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@testing-library/user-event':
+        specifier: ^14.6.1
+        version: 14.6.6(@testing-library/dom@10.4.1)
       '@types/react':
         specifier: ^19.1.12
         version: 19.2.18
@@ -115,9 +130,18 @@ importers:
 
   apps/worker:
     dependencies:
+      '@human-agent/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@human-agent/mock-adapter':
+        specifier: workspace:*
+        version: link:../../packages/mock-adapter
       '@human-agent/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
+      '@human-agent/pi-adapter':
+        specifier: workspace:*
+        version: link:../../packages/pi-adapter
     devDependencies:
       '@types/node':
         specifier: ^24.3.0
@@ -129,8 +153,92 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
+  packages/application:
+    dependencies:
+      '@human-agent/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@human-agent/executor-sdk':
+        specifier: workspace:*
+        version: link:../executor-sdk
+      '@human-agent/mock-adapter':
+        specifier: workspace:*
+        version: link:../mock-adapter
+      '@human-agent/persistence':
+        specifier: workspace:*
+        version: link:../persistence
+      '@human-agent/verification':
+        specifier: workspace:*
+        version: link:../verification
+      '@human-agent/workspace-git':
+        specifier: workspace:*
+        version: link:../workspace-git
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.23.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
+
+  packages/domain:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
+
+  packages/executor-sdk:
+    dependencies:
+      '@human-agent/domain':
+        specifier: workspace:*
+        version: link:../domain
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
+
+  packages/mock-adapter:
+    dependencies:
+      '@human-agent/executor-sdk':
+        specifier: workspace:*
+        version: link:../executor-sdk
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
+
   packages/persistence:
     dependencies:
+      '@human-agent/domain':
+        specifier: workspace:*
+        version: link:../domain
       dotenv:
         specifier: ^16.6.1
         version: 16.6.1
@@ -154,6 +262,22 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
 
+  packages/pi-adapter:
+    dependencies:
+      '@human-agent/executor-sdk':
+        specifier: workspace:*
+        version: link:../executor-sdk
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
+
   packages/shared-contracts:
     devDependencies:
       '@types/node':
@@ -162,6 +286,27 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
+
+  packages/verification:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/workspace-git:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jsdom@26.1.0)(tsx@4.23.12)
 
 packages:
 
@@ -667,8 +812,8 @@ packages:
     peerDependencies:
       '@testing-library/dom': '>=10 <11'
 
-  '@testing-library/react@16.3.2':
-    resolution: {integrity: sha512-XU5/SytQM+ykqMnAnvB2umaJNIOsLF3PVv//1Ew4CTcpz0/BRyy/af40qqrt7SjKpDdT1saBMc42CUok5gaw+g==}
+  '@testing-library/react@16.3.3':
+    resolution: {integrity: sha512-Uo193NgQbPMz6lrrhtRQQFcMC6Re/ELLFbbuVL30WDlZxlpZf9/lMHTAVxPRLw1q1iu9OJmR1c2BLiENRstdBg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@testing-library/dom': ^10.0.0
@@ -681,6 +826,12 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  '@testing-library/user-event@14.6.6':
+    resolution: {integrity: sha512-Jbs9FpkkIDw8FgSc6kOVsOv8JuuqGAL7J4X1oot77JxAoDlkNn2GRkd0aYRVuQ+pVQAiHWVkE4rX/dkF5fBiCw==}
+    engines: {node: '>=12', npm: '>=6'}
+    peerDependencies:
+      '@testing-library/dom': '>=7.21.4'
 
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
@@ -2104,7 +2255,7 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@testing-library/react@16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
@@ -2113,6 +2264,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.18
       '@types/react-dom': 19.2.5(@types/react@19.2.18)
+
+  '@testing-library/user-event@14.6.6(@testing-library/dom@10.4.1)':
+    dependencies:
+      '@testing-library/dom': 10.4.1
 
   '@types/aria-query@5.0.4': {}
 

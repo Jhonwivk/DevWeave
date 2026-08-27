@@ -4,10 +4,13 @@
 
 **Blocked by:** 07: 从 Effective Specification 建立 Work Item 与 Coverage
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Planning Agent 可以提交包含 Work Item 和 blocking edges 的 proposal，但不能自行批准。
-- [ ] Human 可以调整 proposal，循环依赖或不存在的 Work Item 引用会被拒绝。
-- [ ] 批准时记录 Recorded Consensus 的结果、登记人、时间和理由，不声明平台验证了全员一致。
-- [ ] Work Graph 页面能够区分可立即开始、被阻塞和已完成的 Work Item。
+- [x] Planning Agent 可以提交包含 Work Item 和 blocking edges 的 proposal，但不能自行批准。
+- [x] Human 可以调整 proposal，循环依赖或不存在的 Work Item 引用会被拒绝。
+- [x] 批准时记录 Recorded Consensus 的结果、登记人、时间和理由，不声明平台验证了全员一致。
+- [x] Work Graph 页面能够区分可立即开始、被阻塞和已完成的 Work Item。
 
+## Answer
+
+Planning 只能 ProposeWorkGraph，循环依赖被拒绝；Recorded Consensus 保存线下结果与免责声明后，Work Item 才进入 ready。

@@ -4,10 +4,13 @@
 
 **Blocked by:** 19: Workspace Diff、Verification 与 Work Item 完成; 25: 从 Checkpoint 精确创建 Execution Branch; 26: Reconstructed Branch 与恢复失败保护
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] 分支比较展示起点、exact/reconstructed 类型、输入变化、diff、Artifact、Decision 和 Verification。
-- [ ] Human 可以选择一个 selected candidate，选择行为记录理由、操作者和候选版本。
-- [ ] 同一 Work Item 同时最多只有一个有效 selected candidate；更换选择通过新操作保留历史。
-- [ ] 未被选择的分支保持可查看，但不能自行推进共享工程状态。
+- [x] 分支比较展示起点、exact/reconstructed 类型、输入变化、diff、Artifact、Decision 和 Verification。
+- [x] Human 可以选择一个 selected candidate，选择行为记录理由、操作者和候选版本。
+- [x] 同一 Work Item 同时最多只有一个有效 selected candidate；更换选择通过新操作保留历史。
+- [x] 未被选择的分支保持可查看，但不能自行推进共享工程状态。
 
+## Answer
+
+同一 Work Item 同时只有一个 selected candidate，选择记录理由；未选中分支不能进入 merge queue。

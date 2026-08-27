@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@human-agent/domain": "workspace:*",
     "dotenv": "^16.6.1",
     "pg": "^8.16.3"
   },

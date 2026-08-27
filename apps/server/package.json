@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.0",
+    "@human-agent/application": "workspace:*",
+    "@human-agent/domain": "workspace:*",
+    "@human-agent/mock-adapter": "workspace:*",
+    "@human-agent/pi-adapter": "workspace:*",
     "@human-agent/persistence": "workspace:*",
     "@human-agent/shared-contracts": "workspace:*",
     "hono": "^4.9.6"

@@ -1,5 +1,8 @@
 import { serve } from "@hono/node-server";
+import { createPlatform } from "@human-agent/application";
+import { createMockExecutor } from "@human-agent/mock-adapter";
 import { createPool, loadWorkspaceEnv } from "@human-agent/persistence";
+import { createPiExecutor } from "@human-agent/pi-adapter";
 import { createApp } from "./app.ts";
 import { createLiveHealthProbes } from "./live-probes.ts";
 import { DEFAULT_WORKER_STALE_AFTER_MS } from "./platform-health.ts";
@@ -15,7 +18,10 @@ const workerStaleAfterMs = Number.parseInt(
 );
 
 const pool = databaseUrl ? createPool(databaseUrl) : undefined;
-const app = createApp(createLiveHealthProbes(pool, { workerStaleAfterMs }));
+const platform = pool
+  ? createPlatform(pool, { executors: { mock: createMockExecutor(), pi: createPiExecutor() } })
+  : undefined;
+const app = createApp(createLiveHealthProbes(pool, { workerStaleAfterMs }), platform);
 
 const server = serve({ fetch: app.fetch, hostname: host, port }, () => {
   process.stdout.write(`Server listening on http://${host}:${String(port)}\n`);

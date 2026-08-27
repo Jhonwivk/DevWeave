@@ -4,10 +4,13 @@
 
 **Blocked by:** 21: 失败、超时与预算处理; 27: 比较 Execution Branch 并选择候选; 39: 正常 OAuth 协作场景
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] 验收场景可确定性触发一个 Agent failure，并在 UI 显示事实、影响和可用恢复操作。
-- [ ] Human 可以从最近 Checkpoint 创建 exact 或明确标注的 reconstructed branch，或启动新的 Execution。
-- [ ] 恢复路径完成 Verification 和 merge，原失败 Execution 与未选择分支保持可回溯。
-- [ ] 自动测试证明失败不会错误完成 Work Item、重复副作用或破坏共享分支。
+- [x] 验收场景可确定性触发一个 Agent failure，并在 UI 显示事实、影响和可用恢复操作。
+- [x] Human 可以从最近 Checkpoint 创建 exact 或明确标注的 reconstructed branch，或启动新的 Execution。
+- [x] 恢复路径完成 Verification 和 merge，原失败 Execution 与未选择分支保持可回溯。
+- [x] 自动测试证明失败不会错误完成 Work Item、重复副作用或破坏共享分支。
 
+## Answer
+
+失败场景确定性触发 Agent failure，可新开 Execution 恢复并 merge；原失败 Execution 保持可回溯且不错误完成 Work Item。

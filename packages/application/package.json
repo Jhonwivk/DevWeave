@@ -1,0 +1,23 @@
+{
+  "name": "@human-agent/application",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc -p tsconfig.json --noEmit", "test": "vitest run" },
+  "dependencies": {
+    "@human-agent/domain": "workspace:*",
+    "@human-agent/executor-sdk": "workspace:*",
+    "@human-agent/mock-adapter": "workspace:*",
+    "@human-agent/persistence": "workspace:*",
+    "@human-agent/verification": "workspace:*",
+    "@human-agent/workspace-git": "workspace:*",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/pg": "^8.15.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

@@ -4,10 +4,13 @@
 
 **Blocked by:** 20: 结构化 Human Intervention; 23: 通过 Pi 执行真实受控代码任务
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Human 可以 interrupt 到稳定边界后请求 Checkpoint，并看到捕获过程与结果。
-- [ ] 成功的 Execution Checkpoint 原子关联 Workspace Checkpoint、opaque Kernel Checkpoint Reference、Project State/input 版本和运行版本元数据。
-- [ ] Workspace 或 Kernel 任一侧捕获失败时不发布可恢复 Checkpoint，并保留失败证据。
-- [ ] 集成测试证明两侧引用来自同一稳定边界，而不是按近似时间戳拼接。
+- [x] Human 可以 interrupt 到稳定边界后请求 Checkpoint，并看到捕获过程与结果。
+- [x] 成功的 Execution Checkpoint 原子关联 Workspace Checkpoint、opaque Kernel Checkpoint Reference、Project State/input 版本和运行版本元数据。
+- [x] Workspace 或 Kernel 任一侧捕获失败时不发布可恢复 Checkpoint，并保留失败证据。
+- [x] 集成测试证明两侧引用来自同一稳定边界，而不是按近似时间戳拼接。
 
+## Answer
+
+Checkpoint 绑定 Workspace commit 与 opaque Kernel ref；任一侧失败则不发布可恢复 Checkpoint。

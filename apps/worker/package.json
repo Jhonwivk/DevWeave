@@ -8,6 +8,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@human-agent/application": "workspace:*",
+    "@human-agent/mock-adapter": "workspace:*",
+    "@human-agent/pi-adapter": "workspace:*",
     "@human-agent/persistence": "workspace:*"
   },
   "devDependencies": {

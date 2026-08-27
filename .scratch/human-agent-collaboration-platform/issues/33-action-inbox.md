@@ -4,10 +4,13 @@
 
 **Blocked by:** 13: Capability Gap 与 System-Generated Agent qualification; 15: Agent 权限与临时 Permission Request; 21: 失败、超时与预算处理; 31: Contract 依赖与 stale 传播; 32: 分层 Timeline 与 Causality Graph
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Inbox 聚合 Capability Gap、Permission Request、failure、budget、unknown 和 stale 等当前可行动事项。
-- [ ] 每项通知展示原因、风险、关联 Project/Work Item/Execution 和允许的 Human 操作。
-- [ ] 已处理、已失效或被 supersede 的事项自动离开待处理视图，但历史仍可追溯。
-- [ ] 普通 Event、日志和页面访问不进入 Inbox，自动测试验证去重和状态同步。
+- [x] Inbox 聚合 Capability Gap、Permission Request、failure、budget、unknown 和 stale 等当前可行动事项。
+- [x] 每项通知展示原因、风险、关联 Project/Work Item/Execution 和允许的 Human 操作。
+- [x] 已处理、已失效或被 supersede 的事项自动离开待处理视图，但历史仍可追溯。
+- [x] 普通 Event、日志和页面访问不进入 Inbox，自动测试验证去重和状态同步。
 
+## Answer
+
+Inbox 只聚合需要行动的 gap/permission/failure/unknown/stale/conflict，去重后历史可追溯。

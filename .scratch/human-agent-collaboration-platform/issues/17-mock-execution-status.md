@@ -4,10 +4,13 @@
 
 **Blocked by:** 04: 实时 Project Dashboard; 07: 从 Effective Specification 建立 Work Item 与 Coverage; 14: Assignment、Concern 与 Reassignment; 15: Agent 权限与临时 Permission Request; 16: Executor Contract 与确定性 Mock Executor
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Human 可以为已分配 Work Item 启动 Execution，记录 Agent 配置、Kernel、权限、Context 输入和基线快照。
-- [ ] 持久任务由 Worker 领取，Execution 状态通过 SSE 从 queued、starting、running 推进到终态。
-- [ ] Execution View 展示 Work Item、Assignee、输入快照、状态和可用动作。
-- [ ] 重复启动 Command 不会创建重复 Execution，一次 Execution 失败也不会把 Work Item 直接标记为 failed。
+- [x] Human 可以为已分配 Work Item 启动 Execution，记录 Agent 配置、Kernel、权限、Context 输入和基线快照。
+- [x] 持久任务由 Worker 领取，Execution 状态通过 SSE 从 queued、starting、running 推进到终态。
+- [x] Execution View 展示 Work Item、Assignee、输入快照、状态和可用动作。
+- [x] 重复启动 Command 不会创建重复 Execution，一次 Execution 失败也不会把 Work Item 直接标记为 failed。
 
+## Answer
+
+StartExecution 入队并由 Worker 领取；重复 idempotency 不创建重复 Execution，失败只作用在 Execution 上。

@@ -4,10 +4,13 @@
 
 **Blocked by:** 05: 创建 Git-backed Specification
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Specification 可以合法经过 draft、in_review 和 effective 状态，非法转换会被拒绝。
-- [ ] Effective Specification 不可原地修改；内容变化必须创建可追溯的新版本。
-- [ ] Human 可以 supersede 或 withdraw 旧版本，历史正文、review result 和操作者保持可查看。
-- [ ] 并发审核使用 expected version，过期操作不会静默覆盖较新的结果。
+- [x] Specification 可以合法经过 draft、in_review 和 effective 状态，非法转换会被拒绝。
+- [x] Effective Specification 不可原地修改；内容变化必须创建可追溯的新版本。
+- [x] Human 可以 supersede 或 withdraw 旧版本，历史正文、review result 和操作者保持可查看。
+- [x] 并发审核使用 expected version，过期操作不会静默覆盖较新的结果。
 
+## Answer
+
+Specification 走 draft → in_review → effective，非法转换与过期 expected version 被拒绝；supersede/withdraw 保留历史版本。
