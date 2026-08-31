@@ -25,6 +25,11 @@ const app = createApp(createLiveHealthProbes(pool, { workerStaleAfterMs }), plat
 
 const server = serve({ fetch: app.fetch, hostname: host, port }, () => {
   process.stdout.write(`Server listening on http://${host}:${String(port)}\n`);
+  process.stdout.write(
+    platform
+      ? "Command API enabled.\n"
+      : "Command API disabled：未设置 DATABASE_URL。复制 `.env.example` 为 `.env` 后重启。\n",
+  );
 });
 
 async function shutdown(): Promise<void> {

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { DomainError } from "@human-agent/domain";
-import type { createPlatform } from "@human-agent/application";
+import { runOAuthDemo, type createPlatform } from "@human-agent/application";
 import { getPlatformHealth, type HealthProbes } from "./platform-health.ts";
 
 export type { HealthProbes } from "./platform-health.ts";
@@ -14,12 +14,43 @@ export function createApp(
 
   app.get("/health", async (context) => context.json(await getPlatformHealth(probes)));
 
+  app.notFound((context) =>
+    context.json(
+      {
+        error: {
+          code: "not_found",
+          message: "接口不存在。若刚更新代码，请重启 `pnpm dev` 后再创建 Project。",
+        },
+      },
+      404,
+    ),
+  );
+
   if (!platform) {
+    const unavailable = () =>
+      ({
+        ok: false,
+        error: {
+          code: "unavailable",
+          message:
+            "Command API 未启用。请确认 `.env` 中的 DATABASE_URL，运行 `pnpm db:init` 后重启 `pnpm dev`。",
+        },
+      }) as const;
+    app.get("/projects", (context) => context.json(unavailable(), 503));
+    app.post("/commands", (context) => context.json(unavailable(), 503));
+    app.post("/demos/oauth", (context) => context.json(unavailable(), 503));
     return app;
   }
 
+  app.post("/demos/oauth", async (context) => {
+    const result = await runOAuthDemo(platform);
+    return context.json(result, 201);
+  });
+
   app.get("/projects", async (context) => {
-    const result = await platform.query(`SELECT * FROM projects ORDER BY created_at DESC`);
+    const result = await platform.query(
+      `SELECT * FROM projects ORDER BY created_at DESC`,
+    );
     return context.json({ projects: result.rows });
   });
 
@@ -27,7 +58,12 @@ export function createApp(
     const envelope = await context.req.json();
     const result = await platform.handle(envelope);
     if (!result.ok) {
-      const status = result.error.code === "conflict" ? 409 : result.error.code === "forbidden" ? 403 : 400;
+      const status =
+        result.error.code === "conflict"
+          ? 409
+          : result.error.code === "forbidden"
+            ? 403
+            : 400;
       return context.json(result, status);
     }
     return context.json(result, 200);
@@ -37,9 +73,13 @@ export function createApp(
     const id = context.req.param("id");
     const result = await platform.query(`SELECT * FROM projects WHERE id=$1`, [id]);
     const project = result.rows[0];
-    if (!project) return context.json({ error: { code: "not_found", message: "Project not found" } }, 404);
+    if (!project)
+      return context.json(
+        { error: { code: "not_found", message: "Project not found" } },
+        404,
+      );
     const events = await platform.query(
-      `SELECT type, project_sequence, occurred_at, actor FROM domain_events WHERE project_id=$1 ORDER BY project_sequence DESC LIMIT 20`,
+      `SELECT * FROM domain_events WHERE project_id=$1 ORDER BY project_sequence DESC LIMIT 20`,
       [id],
     );
     const health = await getPlatformHealth(probes);
@@ -86,20 +126,37 @@ export function createApp(
       `SELECT m.*, h.display_name FROM human_memberships m JOIN humans h ON h.id=m.human_id WHERE m.project_id=$1 AND m.removed_at IS NULL`,
       [id],
     );
-    const agents = await platform.query(`SELECT * FROM agent_memberships WHERE project_id=$1`, [id]);
+    const agents = await platform.query(
+      `SELECT * FROM agent_memberships WHERE project_id=$1`,
+      [id],
+    );
     const gaps = await platform.query(
       `SELECT required_capabilities FROM work_items WHERE project_id=$1`,
       [id],
     );
-    return context.json({ humans: humans.rows, agents: agents.rows, capabilityNeeds: gaps.rows });
+    return context.json({
+      humans: humans.rows,
+      agents: agents.rows,
+      capabilityNeeds: gaps.rows,
+    });
   });
 
   app.get("/projects/:id/work", async (context) => {
     const id = context.req.param("id");
-    const items = await platform.query(`SELECT * FROM work_items WHERE project_id=$1 ORDER BY created_at`, [id]);
-    const specs = await platform.query(`SELECT * FROM specifications WHERE project_id=$1 ORDER BY version_number`, [id]);
+    const items = await platform.query(
+      `SELECT * FROM work_items WHERE project_id=$1 ORDER BY created_at`,
+      [id],
+    );
+    const specs = await platform.query(
+      `SELECT * FROM specifications WHERE project_id=$1 ORDER BY version_number`,
+      [id],
+    );
     const coverage = coverageMatrix(specs.rows, items.rows);
-    return context.json({ workItems: items.rows, specifications: specs.rows, coverage });
+    return context.json({
+      workItems: items.rows,
+      specifications: specs.rows,
+      coverage,
+    });
   });
 
   app.get("/projects/:id/inbox", async (context) => {
@@ -128,19 +185,31 @@ export function createApp(
   });
 
   app.get("/projects/:id/timeline", async (context) => {
-    const layer = context.req.query("layer") ?? "domain";
-    const events = await platform.query(
-      `SELECT * FROM domain_events WHERE project_id=$1 AND layer=$2 ORDER BY project_sequence`,
-      [context.req.param("id"), layer],
-    );
+    const layer = context.req.query("layer") ?? "all";
+    const events =
+      layer === "all"
+        ? await platform.query(
+            `SELECT * FROM domain_events WHERE project_id=$1 ORDER BY project_sequence`,
+            [context.req.param("id")],
+          )
+        : await platform.query(
+            `SELECT * FROM domain_events WHERE project_id=$1 AND layer=$2 ORDER BY project_sequence`,
+            [context.req.param("id"), layer],
+          );
     return context.json({ events: events.rows });
   });
 
   app.get("/projects/:id/artifacts", async (context) => {
-    const artifacts = await platform.query(`SELECT * FROM artifacts WHERE project_id=$1`, [
-      context.req.param("id"),
-    ]);
-    return context.json({ artifacts: artifacts.rows });
+    const projectId = context.req.param("id");
+    const artifacts = await platform.query(
+      `SELECT * FROM artifacts WHERE project_id=$1`,
+      [projectId],
+    );
+    const decisions = await platform.query(
+      `SELECT * FROM decisions WHERE project_id=$1 ORDER BY created_at`,
+      [projectId],
+    );
+    return context.json({ artifacts: artifacts.rows, decisions: decisions.rows });
   });
 
   app.get("/projects/:id/merge", async (context) => {
@@ -148,16 +217,18 @@ export function createApp(
       `SELECT * FROM merge_candidates WHERE project_id=$1 ORDER BY queue_order NULLS LAST`,
       [context.req.param("id")],
     );
-    const conflicts = await platform.query(`SELECT * FROM conflicts WHERE project_id=$1 ORDER BY created_at`, [
-      context.req.param("id"),
-    ]);
+    const conflicts = await platform.query(
+      `SELECT * FROM conflicts WHERE project_id=$1 ORDER BY created_at`,
+      [context.req.param("id")],
+    );
     return context.json({ candidates: candidates.rows, conflicts: conflicts.rows });
   });
 
   app.get("/projects/:id/decisions", async (context) => {
-    const decisions = await platform.query(`SELECT * FROM decisions WHERE project_id=$1 ORDER BY created_at`, [
-      context.req.param("id"),
-    ]);
+    const decisions = await platform.query(
+      `SELECT * FROM decisions WHERE project_id=$1 ORDER BY created_at`,
+      [context.req.param("id")],
+    );
     return context.json({ decisions: decisions.rows });
   });
 
@@ -176,9 +247,12 @@ function coverageMatrix(
   items: Record<string, unknown>[],
 ): { id: string; status: string }[] {
   const effective = specs.filter((spec) => spec.status === "effective").at(-1);
-  const criteria = (effective?.acceptance_criteria as { id: string }[] | undefined) ?? [];
+  const criteria =
+    (effective?.acceptance_criteria as { id: string }[] | undefined) ?? [];
   return criteria.map((criterion) => {
-    const related = items.filter((item) => (item.acceptance_criteria as string[]).includes(criterion.id));
+    const related = items.filter((item) =>
+      (item.acceptance_criteria as string[]).includes(criterion.id),
+    );
     const statuses = related.flatMap((item) =>
       ((item.coverage as { id: string; status: string }[]) ?? [])
         .filter((entry) => entry.id === criterion.id)

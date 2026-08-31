@@ -108,3 +108,21 @@ describe("GET /health", () => {
     expect(body.worker.detail).toContain("pnpm --filter @human-agent/worker start");
   });
 });
+
+describe("Command API without a platform", () => {
+  it("returns JSON 503 for project list and commands instead of a text 404", async () => {
+    const app = createApp(jsonProbes());
+    const list = await app.request("/projects");
+    const created = await app.request("/commands", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ type: "CreateProject" }),
+    });
+
+    expect(list.status).toBe(503);
+    expect(created.status).toBe(503);
+    expect(list.headers.get("content-type")).toMatch(/json/);
+    const body = (await list.json()) as { error: { message: string } };
+    expect(body.error.message).toMatch(/DATABASE_URL|db:init|pnpm dev/);
+  });
+});

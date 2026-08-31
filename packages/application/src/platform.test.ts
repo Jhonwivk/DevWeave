@@ -278,6 +278,37 @@ describe("platform commands", () => {
     expect(run.rows[0]?.status).toBe("failed");
   });
 
+  it("reuses an identical immutable Digital Employee Release across Projects", async () => {
+    const platform = createPlatform(pool, { executors: { mock: createMockExecutor() } });
+    const releasePayload = {
+      name: "Reusable OAuth DE",
+      releaseVersion: "1.0.0",
+      provenance: "signed-local",
+      capabilities: ["oauth.backend"],
+      body: "immutable-release",
+    };
+    const first = await mustOk(
+      platform,
+      cmd("ImportDigitalEmployeeRelease", owner, releasePayload),
+    );
+    const reused = await mustOk(
+      platform,
+      cmd("ImportDigitalEmployeeRelease", owner, releasePayload),
+    );
+    expect(reused.aggregateId).toBe(first.aggregateId);
+    expect(reused.body.reused).toBe(true);
+    const mutation = await platform.handle(
+      cmd("ImportDigitalEmployeeRelease", owner, { ...releasePayload, body: "mutated-release" }),
+    );
+    expect(mutation.ok).toBe(false);
+    if (!mutation.ok) expect(mutation.error.code).toBe("invalid");
+    const stored = await pool.query(
+      `SELECT count(*)::int AS count FROM digital_employee_releases WHERE name=$1 AND release_version=$2`,
+      [releasePayload.name, releasePayload.releaseVersion],
+    );
+    expect(stored.rows[0]?.count).toBe(1);
+  });
+
   it("rejects cyclic work graphs and records consensus with a disclaimer", async () => {
     const { platform, projectId } = await seededProject();
     const specId = await effectiveSpec(platform, projectId);
@@ -623,7 +654,7 @@ describe("platform commands", () => {
         consumerWorkItemId: consumer.aggregateId,
       }),
     );
-    await mustOk(
+    const replacement = await mustOk(
       platform,
       cmd("PublishArtifact", owner, {
         projectId,
@@ -638,6 +669,19 @@ describe("platform commands", () => {
       consumer.aggregateId,
     ]);
     expect(stale.rows[0]?.status).toBe("stale_spec");
+    const versions = await pool.query(
+      `SELECT id, status, version_number, supersedes FROM artifacts WHERE project_id=$1 ORDER BY version_number`,
+      [projectId],
+    );
+    expect(versions.rows).toMatchObject([
+      { id: artifact.aggregateId, status: "superseded", version_number: 1 },
+      {
+        id: replacement.aggregateId,
+        status: "published",
+        version_number: 2,
+        supersedes: artifact.aggregateId,
+      },
+    ]);
   });
 
   it("classifies text, symbol and contract overlaps without locking files", async () => {

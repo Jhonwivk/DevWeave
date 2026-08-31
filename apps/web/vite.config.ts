@@ -9,6 +9,7 @@ export default defineConfig({
     proxy: {
       "/health": "http://127.0.0.1:3001",
       "/commands": "http://127.0.0.1:3001",
+      "/demos": "http://127.0.0.1:3001",
       "/projects": "http://127.0.0.1:3001",
     },
   },

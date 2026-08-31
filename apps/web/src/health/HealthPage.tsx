@@ -24,11 +24,29 @@ export function HealthPage({
   const health = useHealth(fetchHealth);
 
   return (
-    <main>
-      <h1>平台运行健康</h1>
-      <p>分别检查 Server、Worker 和 PostgreSQL 是否可用于本地原生运行。</p>
-      {health ? <HealthTable health={health} /> : <p>正在检查组件状态…</p>}
-    </main>
+    <div className="view-stack">
+      <header className="view-header">
+        <div>
+          <span className="eyebrow">Local runtime</span>
+          <h1>平台运行健康</h1>
+          <p>分别检查 Server、Worker 和 PostgreSQL 是否可用于本地原生运行。</p>
+        </div>
+        <span className="header-badge">
+          <span className="live-dot" />
+          Live probes
+        </span>
+      </header>
+      <section className="panel panel-flush">
+        {health ? (
+          <HealthTable health={health} />
+        ) : (
+          <div className="loading-state" role="status">
+            <span className="spinner" />
+            正在检查组件状态…
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -64,29 +82,46 @@ function useHealth(fetchHealth: () => Promise<PlatformHealth>): PlatformHealth |
 
 function HealthTable({ health }: { health: PlatformHealth }) {
   return (
-    <table>
-      <caption>组件可用状态</caption>
-      <thead>
-        <tr>
-          <th scope="col">组件</th>
-          <th scope="col">状态</th>
-          <th scope="col">说明</th>
-        </tr>
-      </thead>
-      <tbody>
-        <HealthRow name="Server" health={health.server} />
-        <HealthRow name="Worker" health={health.worker} />
-        <HealthRow name="PostgreSQL" health={health.postgres} />
-      </tbody>
-    </table>
+    <div className="data-table-wrap">
+      <table className="data-table health-table">
+        <caption>组件可用状态</caption>
+        <thead>
+          <tr>
+            <th scope="col">组件</th>
+            <th scope="col">状态</th>
+            <th scope="col">说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <HealthRow name="Server" health={health.server} />
+          <HealthRow name="Worker" health={health.worker} />
+          <HealthRow name="PostgreSQL" health={health.postgres} />
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 function HealthRow({ name, health }: { name: string; health: ComponentHealth }) {
   return (
     <tr>
-      <th scope="row">{name}</th>
-      <td>{health.status === "available" ? "可用" : "不可用"}</td>
+      <th scope="row">
+        <span
+          className={
+            health.status === "available" ? "health-signal available" : "health-signal"
+          }
+        />
+        {name}
+      </th>
+      <td>
+        <span
+          className="status-pill"
+          data-tone={health.status === "available" ? "good" : "danger"}
+        >
+          <span />
+          {health.status === "available" ? "可用" : "不可用"}
+        </span>
+      </td>
       <td>{health.detail}</td>
     </tr>
   );

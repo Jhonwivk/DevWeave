@@ -327,24 +327,40 @@ export function createPlatform(
   async function importRelease(client: pg.PoolClient, command: CommandEnvelope): Promise<CommandOk> {
     const body = required(command.payload.body, "body");
     const contentHash = hash(body);
+    const name = required(command.payload.name, "name");
+    const releaseVersion = required(command.payload.releaseVersion, "releaseVersion");
+    const provenance = required(command.payload.provenance, "provenance");
+    const capabilities = command.payload.capabilities ?? [];
     if (command.payload.contentHash && command.payload.contentHash !== contentHash) {
       throw new DomainError("invalid", "Digital Employee Release content hash mismatch");
     }
     const id = newId("rel");
-    await client.query(
+    const inserted = await client.query(
       `INSERT INTO digital_employee_releases (id, name, release_version, provenance, capabilities, content_hash, body)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [
-        id,
-        required(command.payload.name, "name"),
-        required(command.payload.releaseVersion, "releaseVersion"),
-        required(command.payload.provenance, "provenance"),
-        jsonb(command.payload.capabilities ?? []),
-        contentHash,
-        body,
-      ],
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       ON CONFLICT (name, release_version) DO NOTHING
+       RETURNING id`,
+      [id, name, releaseVersion, provenance, jsonb(capabilities), contentHash, body],
     );
-    return ok(id, 1, { id, contentHash }, []);
+    if (inserted.rowCount) {
+      return ok(id, 1, { id, contentHash, reused: false }, []);
+    }
+    const existing = await one(
+      client,
+      `SELECT * FROM digital_employee_releases WHERE name=$1 AND release_version=$2`,
+      [name, releaseVersion],
+    );
+    const sameRelease =
+      existing.content_hash === contentHash &&
+      existing.provenance === provenance &&
+      JSON.stringify(existing.capabilities) === JSON.stringify(capabilities);
+    if (!sameRelease) {
+      throw new DomainError(
+        "invalid",
+        "Digital Employee Release version is immutable and already has different content",
+      );
+    }
+    return ok(String(existing.id), 1, { id: existing.id, contentHash, reused: true }, []);
   }
 
   async function adoptDigitalEmployee(client: pg.PoolClient, command: CommandEnvelope): Promise<CommandOk> {
@@ -965,10 +981,27 @@ export function createPlatform(
     const body = command.payload.body ?? {};
     const contentHash = hash(JSON.stringify(body));
     const projectId = required(command.payload.projectId, "projectId");
+    const supersedesId = command.payload.supersedes
+      ? String(command.payload.supersedes)
+      : undefined;
+    let versionNumber = 1;
+    if (supersedesId) {
+      const previous = await one(client, `SELECT * FROM artifacts WHERE id=$1`, [supersedesId]);
+      if (String(previous.project_id) !== projectId) {
+        throw new DomainError("invalid", "Artifact cannot supersede another Project's version");
+      }
+      if (String(previous.kind) !== String(command.payload.kind)) {
+        throw new DomainError("invalid", "Artifact versions must keep the same kind");
+      }
+      if (previous.status !== "published") {
+        throw new DomainError("invalid", "Only a published Artifact can be superseded");
+      }
+      versionNumber = Number(previous.version_number) + 1;
+    }
     await write(client, projectId, command, [
       {
-        sql: `INSERT INTO artifacts (id, project_id, work_item_id, producer_execution_id, kind, title, status, version_number, content_hash, body, version)
-              VALUES ($1,$2,$3,$4,$5,$6,'published',1,$7,$8,1)`,
+        sql: `INSERT INTO artifacts (id, project_id, work_item_id, producer_execution_id, kind, title, status, version_number, content_hash, body, supersedes, version)
+              VALUES ($1,$2,$3,$4,$5,$6,'published',$7,$8,$9,$10,1)`,
         params: [
           id,
           projectId,
@@ -976,22 +1009,26 @@ export function createPlatform(
           command.payload.executionId ?? null,
           required(command.payload.kind, "kind"),
           required(command.payload.title, "title"),
+          versionNumber,
           contentHash,
           body,
+          supersedesId ?? null,
         ],
       },
-    ], [event(command, id, "Artifact", 1, "ArtifactPublished", { contentHash })]);
-    if (command.payload.supersedes) {
-      await client.query(`UPDATE artifacts SET status='superseded', supersedes=NULL WHERE id=$1`, [
-        command.payload.supersedes,
-      ]);
+    ], [event(command, id, "Artifact", 1, "ArtifactPublished", {
+      contentHash,
+      versionNumber,
+      supersedes: supersedesId,
+    })]);
+    if (supersedesId) {
+      await client.query(`UPDATE artifacts SET status='superseded' WHERE id=$1`, [supersedesId]);
       await client.query(
         `UPDATE work_items SET status='stale_spec', stale_reason='Adopted Contract version was superseded' WHERE id IN (SELECT consumer_work_item_id FROM artifact_adoptions WHERE artifact_id=$1)`,
-        [command.payload.supersedes],
+        [supersedesId],
       );
       await openInbox(client, projectId, "stale", "Contract 失效", "Consumer 需要采用新版本", `/projects/${projectId}/artifacts`, {});
     }
-    return ok(id, 1, { id, contentHash, status: "published" }, []);
+    return ok(id, 1, { id, contentHash, status: "published", versionNumber }, []);
   }
 
   async function adoptArtifact(client: pg.PoolClient, command: CommandEnvelope): Promise<CommandOk> {

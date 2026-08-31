@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defineExecutorContract } from "@human-agent/executor-sdk";
+import { defineExecutorContract } from "@human-agent/executor-sdk/contract-suite";
 import { createPiExecutor } from "./pi-executor.ts";
 
 describe("pi adapter opacity", () => {

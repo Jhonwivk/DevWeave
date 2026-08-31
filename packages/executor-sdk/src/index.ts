@@ -7,4 +7,3 @@ export type {
   KernelCheckpointRef,
 } from "./contract.ts";
 export { isCapabilityMiss, unsupported } from "./contract.ts";
-export { defineExecutorContract } from "./contract-suite.ts";
