@@ -26,7 +26,7 @@ pnpm dev
 
 OAuth 验收使用本地 fixture 仓库与 Mock Executor，不连接生产 Provider。Pi 是默认真实 Kernel（需本机已安装 `pi` 并配置其凭证）；测试默认走 Mock Executor。
 
-**真实案例场景套件（9 个）：** 见 [`.scratch/real-case-scenarios/spec.md`](.scratch/real-case-scenarios/spec.md)。运行 `pnpm test -- packages/application/src/scenarios/real-cases.scenario.test.ts` 或 `POST /demos/real-cases`。
+**真实案例 Project 套件（9 个，Pi Kernel 验收）：** 见 [`.scratch/real-case-scenarios/spec.md`](.scratch/real-case-scenarios/spec.md)。需安装 `@earendil-works/pi-coding-agent`（`pi` CLI）并配置 Provider 凭证，运行 `pnpm test:real-cases` 或 `POST /demos/real-cases`。
 
 macOS 安装 PostgreSQL：
 
