@@ -294,59 +294,61 @@ System-Generated Agent  Integration / QA
 
 ## 7. M0 实施清单
 
+> **Phase 1 完成说明：** 以下 36 项已在 v1.0 交付中完成，对应 issue tracker tickets #01–#42（见 `.scratch/human-agent-collaboration-platform/`）。M1–M7 里程碑同样已全部 resolved。
+
 ### M0-A — Repository & Tooling
 
-- [ ] `M0-A01` 初始化 TypeScript workspace 与统一 package scripts。
-- [ ] `M0-A02` 创建 `apps/web`、`apps/server`、`apps/worker`。
-- [ ] `M0-A03` 创建 `packages/domain`、`application`、`persistence`、`shared-contracts`、`executor-sdk`、`mock-adapter`。
-- [ ] `M0-A04` 开启 strict typecheck，配置 lint、format 和 unit test。
-- [ ] `M0-A05` 增加本地环境诊断：Node、包管理器、Git、PostgreSQL、Pi。
-- [ ] `M0-A06` 编写不依赖 Docker 的安装、数据库初始化和启动说明。
+- [x] `M0-A01` 初始化 TypeScript workspace 与统一 package scripts。
+- [x] `M0-A02` 创建 `apps/web`、`apps/server`、`apps/worker`。
+- [x] `M0-A03` 创建 `packages/domain`、`application`、`persistence`、`shared-contracts`、`executor-sdk`、`mock-adapter`。
+- [x] `M0-A04` 开启 strict typecheck，配置 lint、format 和 unit test。
+- [x] `M0-A05` 增加本地环境诊断：Node、包管理器、Git、PostgreSQL、Pi。
+- [x] `M0-A06` 编写不依赖 Docker 的安装、数据库初始化和启动说明。
 
 ### M0-B — Domain Contracts
 
-- [ ] `M0-B01` 定义 branded IDs：Project、Actor、Membership、Spec、WorkItem、Execution、Checkpoint、Artifact、Decision、Event。
-- [ ] `M0-B02` 将已确认状态机编码为纯 Domain transitions。
-- [ ] `M0-B03` 定义 versioned Command Envelope 和 idempotency contract。
-- [ ] `M0-B04` 定义 versioned Domain Event Envelope 和 causation/correlation fields。
-- [ ] `M0-B05` 定义 Artifact、Verification Evidence 和 Context Package serialization contracts。
-- [ ] `M0-B06` 为公共契约增加 schema compatibility tests。
+- [x] `M0-B01` 定义 branded IDs：Project、Actor、Membership、Spec、WorkItem、Execution、Checkpoint、Artifact、Decision、Event。
+- [x] `M0-B02` 将已确认状态机编码为纯 Domain transitions。
+- [x] `M0-B03` 定义 versioned Command Envelope 和 idempotency contract。
+- [x] `M0-B04` 定义 versioned Domain Event Envelope 和 causation/correlation fields。
+- [x] `M0-B05` 定义 Artifact、Verification Evidence 和 Context Package serialization contracts。
+- [x] `M0-B06` 为公共契约增加 schema compatibility tests。
 
 ### M0-C — Executor Contract
 
-- [ ] `M0-C01` 定义 `ExecutorCapabilities`。
-- [ ] `M0-C02` 定义必需接口：`start / interrupt / getState / subscribe`。
-- [ ] `M0-C03` 定义可选接口：`send / resume / checkpoint / forkFrom`。
-- [ ] `M0-C04` 定义 opaque `KernelCheckpointRef` 和 Adapter/version metadata。
-- [ ] `M0-C05` 定义标准 Execution states 与 Kernel mapping contract。
-- [ ] `M0-C06` 建立 Executor contract test suite。
-- [ ] `M0-C07` 实现最小 Mock Executor 并通过 contract tests。
+- [x] `M0-C01` 定义 `ExecutorCapabilities`。
+- [x] `M0-C02` 定义必需接口：`start / interrupt / getState / subscribe`。
+- [x] `M0-C03` 定义可选接口：`send / resume / checkpoint / forkFrom`。
+- [x] `M0-C04` 定义 opaque `KernelCheckpointRef` 和 Adapter/version metadata。
+- [x] `M0-C05` 定义标准 Execution states 与 Kernel mapping contract。
+- [x] `M0-C06` 建立 Executor contract test suite。
+- [x] `M0-C07` 实现最小 Mock Executor 并通过 contract tests。
 
 ### M0-D — Persistence & Runtime Skeleton
 
-- [ ] `M0-D01` 建立 PostgreSQL migration runner。
-- [ ] `M0-D02` 建立 transaction boundary 和 repository ports。
-- [ ] `M0-D03` 建立 Domain Event + Outbox 原子写入测试。
-- [ ] `M0-D04` 建立 project sequence、aggregate version 和 optimistic concurrency primitive。
-- [ ] `M0-D05` 建立 idempotency record primitive。
-- [ ] `M0-D06` 建立持久 job schema、lease 和 heartbeat primitive。
-- [ ] `M0-D07` 建立 Server/Worker health endpoint 与优雅关闭。
+- [x] `M0-D01` 建立 PostgreSQL migration runner。
+- [x] `M0-D02` 建立 transaction boundary 和 repository ports。
+- [x] `M0-D03` 建立 Domain Event + Outbox 原子写入测试。
+- [x] `M0-D04` 建立 project sequence、aggregate version 和 optimistic concurrency primitive。
+- [x] `M0-D05` 建立 idempotency record primitive。
+- [x] `M0-D06` 建立持久 job schema、lease 和 heartbeat primitive。
+- [x] `M0-D07` 建立 Server/Worker health endpoint 与优雅关闭。
 
 ### M0-E — Web/API Skeleton
 
-- [ ] `M0-E01` 定义 API error envelope、request correlation 和 actor context。
-- [ ] `M0-E02` 建立 Command API 与 Query API 基础路由。
-- [ ] `M0-E03` 建立 SSE connection、project cursor 和 reconnect contract。
-- [ ] `M0-E04` 建立最小 Web shell、Project route 和系统健康页面。
+- [x] `M0-E01` 定义 API error envelope、request correlation 和 actor context。
+- [x] `M0-E02` 建立 Command API 与 Query API 基础路由。
+- [x] `M0-E03` 建立 SSE connection、project cursor 和 reconnect contract。
+- [x] `M0-E04` 建立最小 Web shell、Project route 和系统健康页面。
 
 ### M0-F — Verification
 
-- [ ] `M0-F01` 所有 package 可独立 typecheck。
-- [ ] `M0-F02` Domain、Executor 和 persistence contract tests 全绿。
-- [ ] `M0-F03` migration 可在临时测试数据库从零执行。
-- [ ] `M0-F04` Server、Worker、Web 可通过一组原生命令同时启动。
-- [ ] `M0-F05` 中断 Worker 后 job lease 可以被检测，不会静默重复执行。
-- [ ] `M0-F06` 在文档中记录 M0 已知限制和 M1 入口条件。
+- [x] `M0-F01` 所有 package 可独立 typecheck。
+- [x] `M0-F02` Domain、Executor 和 persistence contract tests 全绿。
+- [x] `M0-F03` migration 可在临时测试数据库从零执行。
+- [x] `M0-F04` Server、Worker、Web 可通过一组原生命令同时启动。
+- [x] `M0-F05` 中断 Worker 后 job lease 可以被检测，不会静默重复执行。
+- [x] `M0-F06` 在文档中记录 M0 已知限制和 M1 入口条件。
 
 ## 8. 风险与控制
 
@@ -377,3 +379,12 @@ System-Generated Agent  Integration / QA
 - 只有同时满足“难逆转、原因不显然、存在真实取舍”的决策才新增 ADR。
 - 每个里程碑结束后先验证退出条件，再开始下一个里程碑。
 - M7 验收前不引入 Agent 市场、云多租户、生产权限或大型团队实验。
+
+## 10. Phase 2 入口
+
+Phase 1 已于 v1.0 完成（见 `.scratch/human-agent-collaboration-platform/`）。Phase 2 治理方向见：
+
+- 决策记录：`.scratch/phase-2-governance/decision.md`
+- Spec：`.scratch/phase-2-governance/spec.md`
+- 依赖图：`.scratch/phase-2-governance/map.md`
+- Tickets：`01`–`10` under `.scratch/phase-2-governance/issues/`

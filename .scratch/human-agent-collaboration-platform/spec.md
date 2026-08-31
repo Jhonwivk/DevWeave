@@ -1,6 +1,6 @@
 # Human-Agent Collaborative Software Engineering Platform — Phase 1
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 ## Problem Statement
 
