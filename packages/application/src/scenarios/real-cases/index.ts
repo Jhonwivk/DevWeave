@@ -1,15 +1,18 @@
 import { randomUUID } from "node:crypto";
 import type { ScenarioPlatform } from "../helpers.ts";
 import type { RealCasesResult, ScenarioResult } from "../types.ts";
-import { runCase01 } from "./case-01-multi-constraint-planning.ts";
-import { runCase02 } from "./case-02-multi-party-negotiation.ts";
-import { runCase03 } from "./case-03-parallel-research.ts";
-import { runCase04 } from "./case-04-dag-orchestration.ts";
-import { runCase05 } from "./case-05-security-permissions.ts";
-import { runCase06 } from "./case-06-causal-reasoning.ts";
-import { runCase07 } from "./case-07-context-pollution.ts";
-import { runCase08 } from "./case-08-infinite-loop.ts";
-import { runCase09 } from "./case-09-partial-info.ts";
+import { requirePiKernel } from "../pi-env.ts";
+import {
+  runCase01,
+  runCase02,
+  runCase03,
+  runCase04,
+  runCase05,
+  runCase06,
+  runCase07,
+  runCase08,
+  runCase09,
+} from "./case-runners.ts";
 
 export type RealCaseRunner = (
   platform: ScenarioPlatform,
@@ -29,6 +32,7 @@ export const REAL_CASE_RUNNERS: RealCaseRunner[] = [
 ];
 
 export async function runAllRealCases(platform: ScenarioPlatform): Promise<RealCasesResult> {
+  await requirePiKernel();
   const correlationId = `real-cases-${randomUUID()}`;
   const startedAt = new Date().toISOString();
   const scenarios: ScenarioResult[] = [];
@@ -53,6 +57,7 @@ export async function runRealCase(
   platform: ScenarioPlatform,
   caseId: string,
 ): Promise<ScenarioResult> {
+  await requirePiKernel();
   const runner = REAL_CASE_RUNNERS.find((_, index) => `case-0${index + 1}` === caseId || `case-${index + 1}` === caseId);
   if (!runner) {
     throw new Error(`Unknown real case id: ${caseId}`);

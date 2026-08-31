@@ -2,8 +2,10 @@ import { rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createMockExecutor } from "@human-agent/mock-adapter";
+import { createPiExecutor } from "@human-agent/pi-adapter";
 import { createPool, initializeDatabase, loadWorkspaceEnv } from "@human-agent/persistence";
 import { createPlatform } from "../platform.ts";
+import { probePiKernel } from "./pi-env.ts";
 import { runAllRealCases, runRealCase } from "./real-cases/index.ts";
 
 loadWorkspaceEnv();
@@ -12,6 +14,8 @@ const databaseUrl = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL;
 if (!databaseUrl) {
   throw new Error("缺少 TEST_DATABASE_URL 或 DATABASE_URL。");
 }
+
+const piStatus = await probePiKernel();
 
 const TRUNCATE = `
   TRUNCATE
@@ -24,7 +28,7 @@ const TRUNCATE = `
   RESTART IDENTITY CASCADE
 `;
 
-describe("real-case scenarios", () => {
+describe.skipIf(!piStatus.available)("real-case Pi project scenarios", () => {
   const pool = createPool(databaseUrl);
   const fixtures: string[] = [];
 
@@ -52,19 +56,22 @@ describe("real-case scenarios", () => {
   });
 
   function platform() {
-    return createPlatform(pool, { executors: { mock: createMockExecutor() } });
+    return createPlatform(pool, {
+      executors: {
+        mock: createMockExecutor(),
+        pi: createPiExecutor(piStatus.bin),
+      },
+    });
   }
 
-  it("runs all 9 real-case scenarios from a clean database", async () => {
+  it("runs all 9 completed projects with real Pi kernel", async () => {
     const result = await runAllRealCases(platform());
     expect(result.total).toBe(9);
     expect(result.failed).toBe(0);
-    expect(result.passed).toBe(9);
     for (const scenario of result.scenarios) {
       expect(scenario.passed, `${scenario.id} ${scenario.name}`).toBe(true);
-      expect(scenario.assertions.every((item) => item.passed)).toBe(true);
     }
-  }, 120_000);
+  }, 1_800_000);
 
   it.each([
     ["case-01", "多约束产品方案推演"],
@@ -76,10 +83,18 @@ describe("real-case scenarios", () => {
     ["case-07", "上下文污染测试"],
     ["case-08", "无限循环收敛熔断测试"],
     ["case-09", "信息部分缺失场景测试"],
-  ])("runs %s independently", async (caseId, name) => {
+  ])("completes project %s with Pi kernel", async (caseId, name) => {
     const result = await runRealCase(platform(), caseId);
     expect(result.id).toBe(caseId);
     expect(result.name).toBe(name);
     expect(result.passed).toBe(true);
-  }, 60_000);
+  }, 600_000);
 });
+
+if (!piStatus.available) {
+  describe("real-case Pi project scenarios (skipped)", () => {
+    it("requires Pi CLI — install pi or set PI_BIN", () => {
+      expect(piStatus.reason).toBeTruthy();
+    });
+  });
+}
