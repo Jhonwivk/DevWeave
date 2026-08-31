@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { DomainError } from "@human-agent/domain";
-import { runOAuthDemo, type createPlatform } from "@human-agent/application";
+import { runAllRealCases, runOAuthDemo, runRealCase, type createPlatform } from "@human-agent/application";
 import { getPlatformHealth, type HealthProbes } from "./platform-health.ts";
 
 export type { HealthProbes } from "./platform-health.ts";
@@ -39,11 +39,19 @@ export function createApp(
     app.get("/projects", (context) => context.json(unavailable(), 503));
     app.post("/commands", (context) => context.json(unavailable(), 503));
     app.post("/demos/oauth", (context) => context.json(unavailable(), 503));
+    app.post("/demos/real-cases", (context) => context.json(unavailable(), 503));
     return app;
   }
 
   app.post("/demos/oauth", async (context) => {
     const result = await runOAuthDemo(platform);
+    return context.json(result, 201);
+  });
+
+  app.post("/demos/real-cases", async (context) => {
+    const body = await context.req.json().catch(() => ({}));
+    const caseId = typeof body.caseId === "string" ? body.caseId : undefined;
+    const result = caseId ? await runRealCase(platform, caseId) : await runAllRealCases(platform);
     return context.json(result, 201);
   });
 

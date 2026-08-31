@@ -57,6 +57,9 @@ export function createMockExecutor(
     } else if (scenario === "timeout") {
       base.status = "failed";
       base.lastMessage = "Mock execution interrupted after timeout.";
+    } else if (scenario === "loop") {
+      base.status = "running";
+      base.lastMessage = "Mock execution looping without convergence.";
     } else {
       base.status = "unknown";
       base.lastMessage = "Kernel state could not be confirmed.";
